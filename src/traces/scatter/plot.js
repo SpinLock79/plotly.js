@@ -22,7 +22,7 @@ module.exports = function plot(gd, plotinfo, cdscatter, scatterLayer, transition
     var hasTransition = !!transitionOpts && transitionOpts.duration > 0;
 
     // Link traces so the z-order of fill layers is correct
-    var cdscatterSorted = linkTraces(gd, plotinfo, cdscatter);
+    var cdscatterSorted = linkTraces(gd, plotinfo, cdscatter).reverse();
 
     join = scatterLayer.selectAll('g.trace')
         .data(cdscatterSorted, function(d) { return d[0].trace.uid; });
