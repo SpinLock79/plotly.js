@@ -133,10 +133,15 @@ axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption
  *
  */
 axes.getRefType = function(ar) {
-    if(ar === undefined) { return ar; }
-    if(ar === 'paper') { return 'paper'; }
-    if(ar === 'pixel') { return 'pixel'; }
-    if(/( domain)$/.test(ar)) { return 'domain'; } else { return 'range'; }
+    if (ar === undefined) return ar;
+    switch (ar) {
+        case 'area':
+        case 'paper':
+        case 'pixel':
+            return ar;
+        default:
+            return /( domain)$/.test(ar) ? 'domain' : 'range';
+    }
 };
 
 /*

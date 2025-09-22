@@ -128,6 +128,7 @@ module.exports = templatedArray('image', {
     xref: {
         valType: 'enumerated',
         values: [
+            'area',
             'paper',
             cartesianConstants.idRegex.x.toString()
         ],
@@ -142,6 +143,7 @@ module.exports = templatedArray('image', {
     yref: {
         valType: 'enumerated',
         values: [
+            'area',
             'paper',
             cartesianConstants.idRegex.y.toString()
         ],

@@ -153,6 +153,9 @@ exports.cleanLayout = function(layout) {
 
 function cleanAxRef(container, attr) {
     var valIn = container[attr];
+    if(valIn && valIn === 'area') {
+        return;
+    }
     var axLetter = attr.charAt(0);
     if(valIn && valIn !== 'paper') {
         container[attr] = cleanId(valIn, axLetter, true);

@@ -38,9 +38,9 @@ function handleAnnotationDefaults(annIn, annOut, fullLayout) {
         var axLetter = axLetters[i];
 
         // xref, yref
-        var axRef = Axes.coerceRef(annIn, annOut, gdMock, axLetter, '', 'paper');
+        var axRef = Axes.coerceRef(annIn, annOut, gdMock, axLetter, '', ['paper', 'area']);
 
-        if(axRef !== 'paper') {
+        if(axRef !== 'paper' && axRef !== 'area') {
             var ax = Axes.getFromId(gdMock, axRef);
             ax._annIndices.push(annOut._index);
         }

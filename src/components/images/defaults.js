@@ -41,9 +41,9 @@ function imageDefaults(imageIn, imageOut, fullLayout) {
     for(var i = 0; i < 2; i++) {
         // 'paper' is the fallback axref
         var axLetter = axLetters[i];
-        var axRef = Axes.coerceRef(imageIn, imageOut, gdMock, axLetter, 'paper', undefined);
+        var axRef = Axes.coerceRef(imageIn, imageOut, gdMock, axLetter, 'paper', 'area');
 
-        if(axRef !== 'paper') {
+        if(axRef !== 'paper' && axRef !== 'area') {
             var ax = Axes.getFromId(gdMock, axRef);
             ax._imgIndices.push(imageOut._index);
         }

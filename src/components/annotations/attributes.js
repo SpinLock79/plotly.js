@@ -294,6 +294,7 @@ module.exports = templatedArray('annotation', {
     xref: {
         valType: 'enumerated',
         values: [
+            'area',
             'paper',
             cartesianConstants.idRegex.x.toString()
         ],
@@ -349,6 +350,7 @@ module.exports = templatedArray('annotation', {
     yref: {
         valType: 'enumerated',
         values: [
+            'area',
             'paper',
             cartesianConstants.idRegex.y.toString()
         ],

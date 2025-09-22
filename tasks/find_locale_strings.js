@@ -5,7 +5,7 @@ var falafel = require('falafel');
 var { glob } = require('glob');
 
 var constants = require('./util/constants');
-var srcGlob = path.join(constants.pathToSrc, '**/*.js');
+var srcGlob = path.posix.join(constants.pathToSrc, '**/*.js');
 
 var common = require('./util/common');
 

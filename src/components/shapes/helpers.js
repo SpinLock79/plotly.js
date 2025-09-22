@@ -57,6 +57,17 @@ exports.getDataToPixel = function(gd, axis, shift, isVertical, refType) {
     var gs = gd._fullLayout._size;
     var dataToPixel;
 
+    if(refType === 'area') {
+        dataToPixel = function(v) {
+            if(isVertical) {
+                return v * gd._fullLayout.height;
+            } else {
+                return v * gd._fullLayout.width;
+            }
+        };
+        return dataToPixel;
+    }
+
     if(axis) {
         if(refType === 'domain') {
             dataToPixel = function(v) {
@@ -84,6 +95,17 @@ exports.getDataToPixel = function(gd, axis, shift, isVertical, refType) {
 exports.getPixelToData = function(gd, axis, isVertical, opt) {
     var gs = gd._fullLayout._size;
     var pixelToData;
+
+    if(opt === 'area') {
+        pixelToData = function(p) {
+            if(isVertical) {
+                return p / gd._fullLayout.height;
+            } else {
+                return p / gd._fullLayout.width;
+            }
+        };
+        return pixelToData;
+    }
 
     if(axis) {
         if(opt === 'domain') {
@@ -136,8 +158,8 @@ exports.makeShapesOptionsAndPlotinfo = function(gd, index) {
         plotinfo._hadPlotinfo = true;
     } else {
         plotinfo = {};
-        if(options.xref && options.xref !== 'paper') plotinfo.xaxis = gd._fullLayout[options.xref + 'axis'];
-        if(options.yref && options.yref !== 'paper') plotinfo.yaxis = gd._fullLayout[options.yref + 'axis'];
+        if(options.xref && options.xref !== 'paper' && options.xref !== 'area') plotinfo.xaxis = gd._fullLayout[options.xref + 'axis'];
+        if(options.yref && options.yref !== 'paper' && options.yref !== 'area') plotinfo.yaxis = gd._fullLayout[options.yref + 'axis'];
     }
 
     plotinfo.xsizemode = options.xsizemode;
@@ -189,10 +211,14 @@ exports.getPathString = function(gd, options) {
     if(xa) {
         if(xRefType === 'domain') {
             x2p = function(v) { return xa._offset + xa._length * v; };
+        } else if(xRefType === 'area') {
+            x2p = function(v) { return v * gd._fullLayout.width; };
         } else {
             x2r = exports.shapePositionToRange(xa);
             x2p = function(v) { return xa._offset + xa.r2p(x2r(v, true)); };
         }
+    } else if(xRefType === 'area') {
+        x2p = x2p = function(v) { return v * gd._fullLayout.width; };
     } else {
         x2p = function(v) { return gs.l + gs.w * v; };
     }
@@ -204,6 +230,8 @@ exports.getPathString = function(gd, options) {
             y2r = exports.shapePositionToRange(ya);
             y2p = function(v) { return ya._offset + ya.r2p(y2r(v, true)); };
         }
+    }  else if(yRefType === 'area') {
+        y2p = function(v) { return v * gd._fullLayout.height; };
     } else {
         y2p = function(v) { return gs.t + gs.h * (1 - v); };
     }

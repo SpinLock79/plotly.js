@@ -93,7 +93,8 @@ function drawOne(gd, index) {
 
     if(options.layer === 'above') {
         drawShape(gd._fullLayout._shapeUpperLayer);
-    } else if(options.xref === 'paper' || options.yref === 'paper') {
+    } else if(options.xref === 'paper' || options.yref === 'paper' ||
+        options.xref === 'area' || options.yref === 'area') {
         drawShape(gd._fullLayout._shapeLowerLayer);
     } else if(options.layer === 'between') {
         drawShape(plotinfo.shapelayerBetween);
@@ -601,8 +602,8 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
         var ya = Axes.getFromId(gd, yref);
 
         var clipAxes = '';
-        if(xref !== 'paper' && !xa.autorange) clipAxes += xref;
-        if(yref !== 'paper' && !ya.autorange) clipAxes += yref;
+        if(xref !== 'paper' && xref !== 'area' && !xa.autorange) clipAxes += xref;
+        if(yref !== 'paper' && yref !== 'area' && !ya.autorange) clipAxes += yref;
 
         Drawing.setClipUrl(
             shapePath,

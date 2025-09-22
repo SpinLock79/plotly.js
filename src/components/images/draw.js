@@ -19,7 +19,10 @@ module.exports = function draw(gd) {
         var img = fullLayout.images[i];
 
         if(img.visible) {
-            if(img.layer === 'below' && img.xref !== 'paper' && img.yref !== 'paper') {
+            var xIsArea = Axes.getRefType(img.xref) === 'area';
+            var yIsArea = Axes.getRefType(img.yref) === 'area';
+
+            if(img.layer === 'below' && !xIsArea && !yIsArea && img.xref !== 'paper' && img.yref !== 'paper') {
                 subplot = axisIds.ref2id(img.xref) + axisIds.ref2id(img.yref);
 
                 var plotinfo = fullLayout._plots[subplot];
@@ -123,19 +126,27 @@ module.exports = function draw(gd) {
         // Axes if specified
         var xa = Axes.getFromId(gd, d.xref);
         var ya = Axes.getFromId(gd, d.yref);
-        var xIsDomain = Axes.getRefType(d.xref) === 'domain';
-        var yIsDomain = Axes.getRefType(d.yref) === 'domain';
+        var xRefType = Axes.getRefType(d.xref);
+        var yRefType = Axes.getRefType(d.yref);
+        var xIsDomain = xRefType === 'domain';
+        var yIsDomain = yRefType === 'domain';
+        var xIsArea = xRefType === 'area';
+        var yIsArea = yRefType === 'area';
 
         var size = fullLayout._size;
         var width, height;
-        if(xa !== undefined) {
+        if(xIsArea) {
+            width = d.sizex * gd._fullLayout.width;
+        } else if(xa !== undefined) {
             width = ((typeof(d.xref) === 'string') && xIsDomain) ?
                 xa._length * d.sizex :
                 Math.abs(xa.l2p(d.sizex) - xa.l2p(0));
         } else {
             width = d.sizex * size.w;
         }
-        if(ya !== undefined) {
+        if(yIsArea) {
+            height = d.sizey * gd._fullLayout.height;
+        } else if(ya !== undefined) {
             height = ((typeof(d.yref) === 'string') && yIsDomain) ?
                 ya._length * d.sizey :
                 Math.abs(ya.l2p(d.sizey) - ya.l2p(0));
@@ -151,7 +162,9 @@ module.exports = function draw(gd) {
 
         // Final positions
         var xPos, yPos;
-        if(xa !== undefined) {
+        if(xIsArea) {
+            xPos = d.x * gd._fullLayout.width;
+        } else if(xa !== undefined) {
             xPos = ((typeof(d.xref) === 'string') && xIsDomain) ?
                 xa._length * d.x + xa._offset :
                 xa.r2p(d.x) + xa._offset;
@@ -159,7 +172,9 @@ module.exports = function draw(gd) {
             xPos = d.x * size.w + size.l;
         }
         xPos += xOffset;
-        if(ya !== undefined) {
+        if(yIsArea) {
+            yPos = d.y * gd._fullLayout.height;
+        } else if(ya !== undefined) {
             yPos = ((typeof(d.yref) === 'string') && yIsDomain) ?
                 // consistent with "paper" yref value, where positive values
                 // move up the page
@@ -192,8 +207,8 @@ module.exports = function draw(gd) {
 
 
         // Set proper clipping on images
-        var xId = xa && (Axes.getRefType(d.xref) !== 'domain') ? xa._id : '';
-        var yId = ya && (Axes.getRefType(d.yref) !== 'domain') ? ya._id : '';
+        var xId = xa && (Axes.getRefType(d.xref) !== 'domain' && !xIsArea) ? xa._id : '';
+        var yId = ya && (Axes.getRefType(d.yref) !== 'domain' && !yIsArea) ? ya._id : '';
         var clipAxes = xId + yId;
 
         Drawing.setClipUrl(

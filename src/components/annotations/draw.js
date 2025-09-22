@@ -74,6 +74,10 @@ function drawOne(gd, index) {
 function shiftPosition(axa, dAx, axLetter, gs, options) {
     var optAx = options[axLetter];
     var axRef = options[axLetter + 'ref'];
+    if(axRef === 'area') {
+        return optAx + dAx / (axLetter === 'x' ? gd._fullLayout.width : gd._fullLayout.height);
+    }
+
     var vertical = axLetter.indexOf('y') !== -1;
     var axDomainRef = Axes.getRefType(axRef) === 'domain';
     var gsDim = vertical ? gs.h : gs.w;
@@ -327,7 +331,11 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
              * which is the arrowhead if there is one,
              * otherwise the text anchor point
              */
-            if(ax && (axRefType !== 'domain')) {
+            if(axRef === 'area') {
+                basePx = options[axLetter] * (axLetter === 'x' ? gd._fullLayout.width : gd._fullLayout.height);
+                autoAlignFraction = options[axLetter];
+            }
+            else if(ax && (axRefType !== 'domain')) {
                 // check if annotation is off screen, to bypass DOM manipulations
                 var posFraction = ax.r2fraction(options[axLetter]);
                 if(posFraction < 0 || posFraction > 1) {
@@ -375,7 +383,12 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                     // it behaves when its position is set in data ('range')
                     // coordinates.
                     var tailRefType = Axes.getRefType(tailRef);
-                    if(tailRefType === 'domain') {
+                    if (tailRef === 'area') {
+                        if(axLetter === 'y') {
+                            arrowLength = 1 - arrowLength;
+                        }
+                        posPx.tail = arrowLength * (axLetter === 'x' ? gd._fullLayout.width : gd._fullLayout.height);
+                    } else if(tailRefType === 'domain') {
                         if(axLetter === 'y') {
                             arrowLength = 1 - arrowLength;
                         }
@@ -623,10 +636,14 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                         // anyways for consistency
                         if(options.axref === options.xref) {
                             modifyItem('ax', shiftPosition(xa, dx, 'ax', gs, options));
+                        } else if(options.axref === 'area') {
+                            modifyItem('ax', options.ax + dx);
                         }
 
                         if(options.ayref === options.yref) {
                             modifyItem('ay', shiftPosition(ya, dy, 'ay', gs, options));
+                        } else if(options.ayref === 'area') {
+                            modifyItem('ay', options.ay + dy);
                         }
 
                         arrowGroup.attr('transform', strTranslate(dx, dy));
@@ -679,7 +696,9 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                         drawArrow(dx, dy);
                     } else if(!subplotId) {
                         var xUpdate, yUpdate;
-                        if(xa) {
+                        if(options.xref === 'area') {
+                            xUpdate = options.x + dx / gd._fullLayout.width;
+                        } else if(xa) {
                             // shiftPosition will not execute code where xa was
                             // undefined, so we use to calculate xUpdate too
                             xUpdate = shiftPosition(xa, dx, 'x', gs, options);
@@ -691,7 +710,9 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                                 widthFraction, 0, 1, options.xanchor);
                         }
 
-                        if(ya) {
+                        if(options.yref === 'area') {
+                            yUpdate = options.y + dy / gd._fullLayout.height;
+                        } else if(ya) {
                             // shiftPosition will not execute code where ya was
                             // undefined, so we use to calculate yUpdate too
                             yUpdate = shiftPosition(ya, dy, 'y', gs, options);
