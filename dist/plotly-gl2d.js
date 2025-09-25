@@ -49960,7 +49960,7 @@ var Plotly = (() => {
         var join, onComplete;
         var isFullReplot = !transitionOpts;
         var hasTransition = !!transitionOpts && transitionOpts.duration > 0;
-        var cdscatterSorted = linkTraces(gd2, plotinfo, cdscatter).reverse();
+        var cdscatterSorted = linkTraces(gd2, plotinfo, cdscatter);
         join = scatterLayer.selectAll("g.trace").data(cdscatterSorted, function(d) {
           return d[0].trace.uid;
         });
